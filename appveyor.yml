@@ -73,9 +73,8 @@ build_script:
               cd ocide\src
               copy omake.exe \ocide\temp
               c:\ocide\appveyorversion.bat
+              if ($env:BUILD_PROFILE -eq "MSDEBUGBUILD")
               {
-                if ($env:BUILD_PROFILE -eq "MSDEBUGBUILD")
-                {
                   # Build with Microsoft PDB files
                   c:\ocide\temp\omake /DCOMPILER=MS /DMSPDB=$env:MSPDB fullbuild
                   if ($LastExitCode -ne 0)
@@ -83,16 +82,15 @@ build_script:
                       throw "error"
                   }
                   cd ..\src
-                }
-                else
-                {
+              }
+              else
+              {
                       # Primary build for Orange C
                       c:\ocide\temp\omake /DCOMPILER=$env:BUILD_PROFILE fullbuild -j:4
                       if ($LastExitCode -ne 0)
                       {
                           throw "error"
                       }
-                }
               }
               cd ..\.. 
               move ocide projects
