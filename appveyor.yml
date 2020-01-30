@@ -1,0 +1,115 @@
+version: '6.0.43.{BUILD}'
+
+image: Visual Studio 2017
+
+install:
+    - appveyor-retry choco install InnoSetup
+    - git clone https://github.com/c-testsuite/c-testsuite.git
+    - copy c-testsuite\tests\single-exec tests\c-testsuite > NUL
+    - cd \
+    - 7z x projects\orangec\src\cc386.zip *
+    - set PATH=c:\orangec\bin;c:\cc386\bin;%PATH%;C:\Program Files (x86)\Inno Setup 6
+    - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
+    - set PATH=C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
+    - set ORIGPATH=%PATH%
+    - set ORANGEC=c:\ORANGEC
+    - set LADSOFT_DEV=c:\cc386
+
+branches:
+   only:
+     - master
+     - split
+     - /v\d*\.\d*\.\d*\.\d*/
+
+configuration:
+     - MINGW64
+     - CLANG
+     - MSVC
+     - MS WITH PDB
+
+for:
+-
+      matrix:
+            only:
+                - configuration: MSVC
+      environment:
+          BUILD_PROFILE: MS
+      deploy:
+          release: Orange C-$(APPVEYOR_REPO_TAG_NAME)
+          description: 'Current Release'
+          provider: GitHub
+          auth_token:
+              secure: gOXANm+uz1YSqzv6tHI8/UAlAbA/ofp6o1NNxA+dsVX/jnTZioWTVD3f8Q8S6Un7
+          artifact: /.*/
+          draft: false
+          prerelease: false
+          on:
+              branch: /v\d*\.\d*\.\d*\.\d*/
+              APPVEYOR_REPO_TAG: true
+-
+      matrix:
+            only:
+                - configuration: MINGW64
+      environment:
+          BUILD_PROFILE: MINGW64
+-
+      matrix:
+            only:
+                - configuration: CLANG
+      environment:
+          BUILD_PROFILE: CLANG
+-
+      matrix:
+            only:
+                - configuration: MS WITH PDB
+      environment:
+          BUILD_PROFILE: MSDEBUGBUILD
+          MSPDB: YES
+
+
+skip_commits:
+  files:
+    - '**/*.txt'
+    - '**/*.doc'
+    - '**/*.md'
+    - '**/*.html'
+ 
+build_script:
+# the appveyor virtual machine reported two processors, so, lets try running parallel compile!
+        - ps: |
+              cd ..\..
+              move projects\orangec .
+              mkdir \orangec\temp
+              cd orangec\src
+              copy omake.exe \orangec\temp
+              c:\orangec\appveyorversion.bat
+              {
+                if ($env:BUILD_PROFILE -eq "MSDEBUGBUILD")
+                {
+                  # Build with Microsoft PDB files
+                  c:\orangec\temp\omake /DCOMPILER=MS /DMSPDB=$env:MSPDB fullbuild
+                  if ($LastExitCode -ne 0)
+                  {
+                      throw "error"
+                  }
+                  cd ..\src
+                }
+                else
+                {
+                      # Primary build for Orange C
+                      c:\orangec\temp\omake /DCOMPILER=$env:BUILD_PROFILE fullbuild -j:4
+                      if ($LastExitCode -ne 0)
+                      {
+                          throw "error"
+                      }
+                      copy c:\orangec\src\ocide\ocide.exe \orangec\bin
+                }
+              }
+              cd ..\.. 
+              move orangec projects
+              cd projects\orangec
+
+artifacts:
+  - path: "dist\\*.zip"
+    name: releasefiles
+

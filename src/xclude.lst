@@ -1,0 +1,11 @@
+q
+t
+q.*
+bad*.*
+s.*
+r.*
+t.*
+a.*
+bzip2.*
+aes.*
+*.exe

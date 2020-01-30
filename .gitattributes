@@ -1,0 +1,18 @@
+text=auto 
+text eol=crlf
+*.c text
+*.cpp text
+*.h text
+*.nas text
+*.asm text
+makefile text
+*.mak text
+*.yml text
+*.cmpx binary
+*.bmp binary
+*.ico binary
+*.cur binary
+*.fnt binary
+*.odx binary
+*.zip binary
+*.lib binary
