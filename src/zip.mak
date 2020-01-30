@@ -27,7 +27,7 @@ endif
 
 ZIP:="c:/program files/7-zip/7z" -tzip -bd
 
-OCC_VERSION := $(word 3, $(shell cmd /C type \orangec\src\version.h))
+OCC_VERSION := $(word 3, $(shell cmd /C type \ocide\src\version.h))
 OCC_VERSION := $(subst ",,$(OCC_VERSION))
 export OCC_VERSION
 VERNAME := $(subst .,,$(OCC_VERSION))

@@ -27,18 +27,18 @@ endif
 
 ZIP:="c:/program files/7-zip/7z" -tzip -bd
 
-OCC_VERSION := $(word 3, $(shell cmd /C type \orangec\src\version.h))
+OCC_VERSION := $(word 3, $(shell cmd /C type \ocide\src\version.h))
 OCC_VERSION := $(subst ",,$(OCC_VERSION))
 export OCC_VERSION
 VERNAME := $(subst .,,$(OCC_VERSION))
 
-DEST=/orangec/dist/ZippedBinaries$(VERNAME).7z
-SRC=/orangec/dist/ZippedBinaries$(VERNAME).zip
+DEST=/ocide/dist/ZippedBinaries$(VERNAME).7z
+SRC=/ocide/dist/ZippedBinaries$(VERNAME).zip
 
 DISTRIBUTE:
 ifneq "$(ORANGEC_ONLY)" "YES"
 
 	7z x $(SRC) *
-	7z -r -mx=9 a $(DEST) orangec\* 
+	7z -r -mx=9 a $(DEST) ocide\* 
 	cd ..
 endif
