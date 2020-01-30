@@ -86,7 +86,7 @@ build_script:
               else
               {
                       # Primary build for Orange C
-                      c:\ocide\temp\omake /DCOMPILER=$env:BUILD_PROFILE fullbuild -B
+                      c:\ocide\temp\omake /DCOMPILER=$env:BUILD_PROFILE fullbuild -B -j:4
                       if ($LastExitCode -ne 0)
                       {
                           throw "error"
