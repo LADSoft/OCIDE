@@ -5,8 +5,7 @@ image: Visual Studio 2017
 install:
     - appveyor-retry choco install InnoSetup
     - cd \
-    - 7z x projects\orangec\src\cc386.zip *
-    - set PATH=c:\orangec\bin;c:\cc386\bin;%PATH%;C:\Program Files (x86)\Inno Setup 6
+    - set PATH=c:\ocide\bin;%PATH%;C:\Program Files (x86)\Inno Setup 6
     - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
     - set PATH=C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
     - set ORIGPATH=%PATH%
@@ -20,7 +19,6 @@ branches:
      - /v\d*\.\d*\.\d*\.\d*/
 
 configuration:
-     - MINGW64
      - CLANG
      - MSVC
      - MS WITH PDB
@@ -33,7 +31,7 @@ for:
       environment:
           BUILD_PROFILE: MS
       deploy:
-          release: Orange C-$(APPVEYOR_REPO_TAG_NAME)
+          release: Orange C IDE-$(APPVEYOR_REPO_TAG_NAME)
           description: 'Current Release'
           provider: GitHub
           auth_token:
@@ -70,16 +68,16 @@ build_script:
 # the appveyor virtual machine reported two processors, so, lets try running parallel compile!
         - ps: |
               cd ..\..
-              move projects\orangec .
-              mkdir \orangec\temp
-              cd orangec\src
-              copy omake.exe \orangec\temp
-              c:\orangec\appveyorversion.bat
+              move projects\ocide .
+              mkdir \ocide\temp
+              cd ocide\src
+              copy omake.exe \ocide\temp
+              c:\ocide\appveyorversion.bat
               {
                 if ($env:BUILD_PROFILE -eq "MSDEBUGBUILD")
                 {
                   # Build with Microsoft PDB files
-                  c:\orangec\temp\omake /DCOMPILER=MS /DMSPDB=$env:MSPDB fullbuild
+                  c:\ocide\temp\omake /DCOMPILER=MS /DMSPDB=$env:MSPDB fullbuild
                   if ($LastExitCode -ne 0)
                   {
                       throw "error"
@@ -89,17 +87,16 @@ build_script:
                 else
                 {
                       # Primary build for Orange C
-                      c:\orangec\temp\omake /DCOMPILER=$env:BUILD_PROFILE fullbuild -j:4
+                      c:\ocide\temp\omake /DCOMPILER=$env:BUILD_PROFILE fullbuild -j:4
                       if ($LastExitCode -ne 0)
                       {
                           throw "error"
                       }
-                      copy c:\orangec\src\ocide\ocide.exe \orangec\bin
                 }
               }
               cd ..\.. 
-              move orangec projects
-              cd projects\orangec
+              move ocide projects
+              cd projects\ocide
 
 artifacts:
   - path: "dist\\*.zip"
