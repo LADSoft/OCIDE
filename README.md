@@ -34,4 +34,5 @@ IDE to be developed along with the toolchain.
 
 For the project's history see the file [`HISTORY.md`](HISTORY.md).
 
-More documentation on OCIDE may be found in ['OCIDE.md'](doc/OCIDE.md) and ['OCIDE.pdf'](doc/OCIDE.pdf).
+More documentation on OCIDE may be found in ['OCIDE.md'](doc/OCIDE.md) and ['OCIDE.pdf'](doc/OCIDE.pdf).    The former also includes
+basic instructions for installing OCIDE in such a way as to be used with Orange C.
